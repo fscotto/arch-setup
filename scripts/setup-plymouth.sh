@@ -3,12 +3,13 @@ set -euo pipefail
 IFS=$'\n\t'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/lib/logging.sh"
+source "$SCRIPT_DIR/../lib/logging.sh"
 
 # Auto elevate to root if needed
 if [[ $EUID -ne 0 ]]; then
   info "Elevating privileges with sudo..."
-  exec sudo "$0" "$@"
+  sudo bash "$0" "$@"
+  exit $?
 fi
 
 PLYMOUTH_THEME="bgrt"

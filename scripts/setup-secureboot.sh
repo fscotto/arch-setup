@@ -4,12 +4,13 @@ set -euo pipefail
 IFS=$'\n\t'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/lib/logging.sh"
+source "$SCRIPT_DIR/../lib/logging.sh"
 
 # Relaunch script as root if not running as root
 if [[ $EUID -ne 0 ]]; then
   info "Script requires root privileges, relaunching with sudo..."
-  exec sudo "$0" "$@"
+  sudo bash "$0" "$@"
+  exit $?
 fi
 
 info "Starting Secure Boot setup with sbctl..."
@@ -46,4 +47,3 @@ info "Verifying signatures..."
 sbctl verify
 
 success "Secure Boot setup completed. Please reboot and enable Secure Boot in BIOS/UEFI settings."
-

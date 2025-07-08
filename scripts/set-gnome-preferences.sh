@@ -7,7 +7,7 @@ IFS=$'\n\t'
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Load logging functions (expects logging.sh with info, warn, error, success)
-source "$SCRIPT_DIR/lib/logging.sh"
+source "$SCRIPT_DIR/../lib/logging.sh"
 
 info "Starting GNOME preferences setup for Arch Linux..."
 

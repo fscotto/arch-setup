@@ -3,7 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/lib/logging.sh"
+source "$SCRIPT_DIR/../lib/logging.sh"
 
 OPENSSL_CONF="/etc/ssl/openssl.cnf"
 BACKUP_CONF="/etc/ssl/openssl.cnf.bak.$(date +%Y%m%d%H%M%S)"

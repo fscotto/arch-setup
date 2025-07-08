@@ -10,8 +10,8 @@ IFS=$'\n\t'
 # Configures specific GNOME extension settings via gsettings.
 # -------------------------------------------------------
 
-source "$(dirname "${BASH_SOURCE[0]}")/lib/logging.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/lib/functions.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/logging.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/functions.sh"
 
 USER_EXT="$HOME/.local/share/gnome-shell/extensions"
 SYSTEM_EXT="/usr/share/glib-2.0/schemas"

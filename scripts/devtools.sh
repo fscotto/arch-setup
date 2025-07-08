@@ -5,7 +5,7 @@ IFS=$'\n\t'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_FILE="${LOG_FILE:-dev-tools-install.log}"
-source "$SCRIPT_DIR/lib/logging.sh"
+source "$SCRIPT_DIR/../lib/logging.sh"
 
 info "Installing all development tools and additional apps..."
 

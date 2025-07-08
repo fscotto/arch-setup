@@ -10,8 +10,8 @@ IFS=$'\n\t'
 # launcher shortcuts, and terminal launcher.
 # -------------------------------------------------------
 
-source "$(dirname "${BASH_SOURCE[0]}")/lib/logging.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/lib/functions.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/logging.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/functions.sh"
 
 info "Setting GNOME hotkeys..."
 

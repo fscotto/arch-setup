@@ -3,12 +3,13 @@ set -euo pipefail
 IFS=$'\n\t'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/lib/logging.sh"
+source "$SCRIPT_DIR/../lib/logging.sh"
 
 # Elevate privileges if not root
 if [[ $EUID -ne 0 ]]; then
   info "Elevating privileges with sudo..."
-  exec sudo "$0" "$@"
+  sudo bash "$0" "$@"
+  exit $?
 fi
 
 find_luks_devices() {
@@ -71,7 +72,7 @@ configure_dracut() {
   # Add tpm2 module to dracut config (if not already present)
   if ! grep -q "tpm2" "$dracut_conf" 2>/dev/null; then
     info "Adding 'tpm2' to dracut modules in $dracut_conf"
-    echo 'add_dracutmodules+=" tpm2 "' >> "$dracut_conf"
+    echo 'add_dracutmodules+=" tpm2 "' >>"$dracut_conf"
   else
     warn "'tpm2' module already enabled in dracut config"
   fi
@@ -141,4 +142,3 @@ if tpm_device_exists; then
 else
   error "TPM device not found on this system"
 fi
-
