@@ -39,12 +39,13 @@ SCRIPTS=(
   "$SCRIPT_DIR/scripts/devtools.sh"
   "$SCRIPT_DIR/scripts/app-docker.sh"
   "$SCRIPT_DIR/scripts/dotfiles.sh"
-  "$SCRIPT_DIR/scripts/tpm2.sh"
-  "$SCRIPT_DIR/scripts/setup-plymouth.sh"
   "$SCRIPT_DIR/scripts/set-gnome-extensions.sh"
   "$SCRIPT_DIR/scripts/set-gnome-hotkeys.sh"
   "$SCRIPT_DIR/scripts/set-gnome-preferences.sh"
   "$SCRIPT_DIR/scripts/set-openssl-legacy.sh"
+  "$SCRIPT_DIR/scripts/tpm2.sh"
+  "$SCRIPT_DIR/scripts/setup-plymouth.sh"
+  "$SCRIPT_DIR/scripts/setup-secureboot.sh"
 )
 
 for script in "${SCRIPTS[@]}"; do

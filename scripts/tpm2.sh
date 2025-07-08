@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
-
 set -euo pipefail
+IFS=$'\n\t'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/logging.sh"
 
-# Find all LUKS encrypted devices on the system
+# Elevate privileges if not root
+if [[ $EUID -ne 0 ]]; then
+  info "Elevating privileges with sudo..."
+  exec sudo "$0" "$@"
+fi
+
 find_luks_devices() {
   mapfile -t devices < <(blkid -t TYPE=crypto_LUKS -o device)
   echo "${devices[@]}"
 }
 
-# If multiple LUKS devices are found, ask the user to choose one
 choose_luks_device() {
   local devices=("$@")
 
@@ -38,7 +42,46 @@ choose_luks_device() {
   fi
 }
 
-# Configure TPM2 to unlock the LUKS partition
+tpm_device_exists() {
+  [[ -d /sys/class/tpm ]] || [[ -c /dev/tpm0 ]]
+}
+
+configure_mkinitcpio() {
+  info "Detected mkinitcpio system (Arch Linux)"
+  if ! grep -q "tpm2" /etc/mkinitcpio.conf; then
+    info "Adding 'tpm2' hook to mkinitcpio.conf"
+    if grep -q 'HOOKS=.*encrypt' /etc/mkinitcpio.conf; then
+      sed -i 's/\(HOOKS=.*\)encrypt/\1tpm2 encrypt/' /etc/mkinitcpio.conf
+    else
+      sed -i 's/\(HOOKS=.*block\)/\1 tpm2/' /etc/mkinitcpio.conf
+    fi
+    info "Regenerating initramfs"
+    mkinitcpio -P >>"$LOG_FILE" 2>&1 || warn "mkinitcpio command failed"
+    success "Updated initramfs with 'tpm2' hook"
+  else
+    warn "'tpm2' hook already present in mkinitcpio.conf"
+  fi
+}
+
+configure_dracut() {
+  info "Detected dracut system (EndeavourOS)"
+  local dracut_conf="/etc/dracut.conf"
+  local dracut_modules="/usr/lib/dracut/modules.d"
+
+  # Add tpm2 module to dracut config (if not already present)
+  if ! grep -q "tpm2" "$dracut_conf" 2>/dev/null; then
+    info "Adding 'tpm2' to dracut modules in $dracut_conf"
+    echo 'add_dracutmodules+=" tpm2 "' >> "$dracut_conf"
+  else
+    warn "'tpm2' module already enabled in dracut config"
+  fi
+
+  info "Regenerating initramfs with dracut"
+  # Regenerate all kernels' initramfs images
+  dracut --force --kver "$(uname -r)" >>"$LOG_FILE" 2>&1 || warn "dracut command failed"
+  success "Updated initramfs with 'tpm2' module"
+}
+
 configure_tpm_module() {
   mapfile -t luks_devices < <(find_luks_devices)
 
@@ -49,31 +92,36 @@ configure_tpm_module() {
 
   info "Configuring TPM2 to unlock LUKS partition: $luks2_device"
 
-  # Add 'tpm2' hook to mkinitcpio if not present
-  if ! grep -q "tpm2" /etc/mkinitcpio.conf; then
-    info "Adding 'tpm2' hook to mkinitcpio"
-    sudo sed -i 's/^\(HOOKS=.*\)encrypt\(.*\)/\1encrypt tpm2\2/' /etc/mkinitcpio.conf
-    sudo mkinitcpio -P >>"$LOG_FILE" 2>&1
-    success "Updated initramfs with 'tpm2' hook"
+  if [[ -f /etc/mkinitcpio.conf ]]; then
+    configure_mkinitcpio
+  elif [[ -f /etc/dracut.conf || -d /usr/lib/dracut/modules.d ]]; then
+    configure_dracut
   else
-    warn "'tpm2' hook already present in mkinitcpio.conf"
+    error "Could not detect initramfs tool (mkinitcpio or dracut). Exiting."
+    exit 1
   fi
 
-  info "Running systemd-cryptenroll for TPM2 device"
-  sudo systemd-cryptenroll --wipe-slot tpm2 --tpm2-device auto --tpm2-pcrs "7" "$luks2_device" >>"$LOG_FILE" 2>&1
+  info "Enrolling TPM2 with systemd-cryptenroll"
+  systemd-cryptenroll --wipe-slot tpm2 --tpm2-device auto --tpm2-pcrs "7" "$luks2_device" >>"$LOG_FILE" 2>&1 || {
+    error "Failed to enroll TPM2 with systemd-cryptenroll"
+    exit 1
+  }
 
-  info "Backing up /etc/crypttab"
-  sudo cp /etc/crypttab /etc/crypttab.bak
+  info "Backing up /etc/crypttab to /etc/crypttab.bak"
+  cp /etc/crypttab /etc/crypttab.bak
 
-  info "Appending TPM2 options to /etc/crypttab"
-  sudo sed -i 's/$/ tpm2-device=auto,tpm2-pcrs=0+1+2+3+4+5+7+9/' /etc/crypttab
+  if ! grep -q "tpm2-device=auto" /etc/crypttab; then
+    info "Appending TPM2 options to /etc/crypttab"
+    sed -i '/^[^#]/ s/$/ tpm2-device=auto,tpm2-pcrs=0+1+2+3+4+5+7+9/' /etc/crypttab
+  else
+    warn "TPM2 options already present in /etc/crypttab"
+  fi
 
   success "TPM2 configuration completed."
 }
 
-# Check if TPM device exists
-if ls -d /sys/kernel/security/tpm* 1>/dev/null 2>&1; then
-  info "TPM device available"
+if tpm_device_exists; then
+  info "TPM device detected"
   while true; do
     read -r -p "Do you want to configure the TPM chip? (Y/N): " answer
     case $answer in
@@ -85,9 +133,12 @@ if ls -d /sys/kernel/security/tpm* 1>/dev/null 2>&1; then
       info "TPM configuration skipped."
       break
       ;;
-    *) warn "Please answer Y or N." ;;
+    *)
+      warn "Please answer Y or N."
+      ;;
     esac
   done
 else
-  error "TPM device not found"
+  error "TPM device not found on this system"
 fi
+
