@@ -1,11 +1,35 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
+IFS=$'\n\t'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../lib/logging.sh"
 
 info "Configuring dotfiles..."
+
+# Install Oh My Zsh if not installed
+if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+  info "Installing Oh My Zsh..."
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" >>"$LOG_FILE" 2>&1 && success "Oh My Zsh installed" || {
+    error "Failed to install Oh My Zsh"
+    exit 1
+  }
+else
+  info "Oh My Zsh already installed"
+fi
+
+# Change default shell to zsh if not already set and if zsh exists
+if command -v zsh &>/dev/null; then
+  if [[ "$SHELL" != "$(command -v zsh)" ]]; then
+    info "Changing default shell to zsh for user $USER"
+    chsh -s "$(command -v zsh)" && success "Default shell changed to zsh" || warn "Failed to change default shell"
+  else
+    info "Default shell is already zsh"
+  fi
+else
+  warn "zsh is not installed, skipping shell change"
+fi
 
 DOTFILES_REPO="https://github.com/fscotto/dotfiles.git"
 DOTFILES_DIR="$HOME/.dotfiles"
