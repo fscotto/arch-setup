@@ -132,6 +132,13 @@ elif [ -e "$asdf_home" ]; then
   rm -f "$asdf_home"
 fi
 
+if [[ ! -e "$HOME/.asdf" ]]; then
+  ln -sfn "${MISE_DATA_DIR:-$HOME/.local/share/mise}" "$HOME/.asdf"
+  success "Symlink created: ~/.asdf → ${MISE_DATA_DIR:-$HOME/.local/share/mise}"
+else
+  warn "Symlink ~/.asdf already exists"
+fi
+
 success "Mise setup completed successfully."
 
 # --- Visual Studio Code Extensions and Settings ---
