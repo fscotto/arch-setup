@@ -9,44 +9,54 @@ info "Installing base system packages..."
 
 PACKAGES=(
   bat
-  bruno-bin
+  bluez
+  bluez-utils
+  blueman
   btop
+  catppuccin-gtk-theme
   cmatrix
   dbeaver
   dconf-editor
   devtoolbox
   duf
   exercism
-  exiftool
   eza
   fastfetch
   fd
   filezilla
   firefox
   freefilesync-bin
+  fuzzel
   fzf
   gcolor3
   gnome-boxes
+  gnupg
   htop
   httpie
   hwinfo
+  hyprland
+  hyprpaper
   inotify-tools
   jq
   kitty
   koodo-reader
+  mako
   masterpdfeditor-bin
-  miller
-  minicom
   neovim
+  networkmanager
+  nm-connection-editor
   onlyoffice-desktopeditors
+  openssh
   papirus-icon-theme-dark
+  pipewire
+  pipewire-pulse
   pipx
   putty
   qalculate-gtk
   qemu
   ripgrep
-  rsync
   rpi-imager
+  rsync
   seahorse
   solaar
   spotify
@@ -54,14 +64,17 @@ PACKAGES=(
   stow
   sushi
   telegram-desktop
+  thunar
   thunderbird
   tmux
+  ttf-cascadia-code-nerd
   ttf-firacode-nerd
   ttf-jetbrains-mono-nerd
   ttf-roboto-mono-nerd
+  uar
   ugrep
-  unar
   vlc
+  waybar
   xclip
   xournalpp
   xsel
