@@ -61,9 +61,9 @@ DEV_PACKAGES=(
 
 # Additional native Arch/AUR applications (including JetBrains IntelliJ Ultimate)
 APP_PACKAGES=(
-  code
   intellij-idea-ultimate-edition
   postman-bin
+  visual-studio-code-bin
 )
 
 # Ensure yay installed
