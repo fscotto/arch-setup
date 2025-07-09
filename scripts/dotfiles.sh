@@ -19,6 +19,14 @@ else
   info "Oh My Zsh already installed"
 fi
 
+# Backup existing .zshrc and .zshenv if present and not already backed up
+for file in "$HOME/.zshrc" "$HOME/.zshenv"; do
+  if [[ -f "$file" && ! -f "${file}.bak" ]]; then
+    mv "$file" "${file}.bak"
+    info "Backed up $(basename "$file") to $(basename "${file}.bak")"
+  fi
+done
+
 # Change default shell to zsh if not already set and if zsh exists
 if command -v zsh &>/dev/null; then
   if [[ "$SHELL" != "$(command -v zsh)" ]]; then
