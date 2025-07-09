@@ -26,7 +26,6 @@ DEV_PACKAGES=(
   glab-bin
   glow-bin
   helm
-  hexyl
   hugo
   jmeter
   k9s
@@ -57,7 +56,6 @@ DEV_PACKAGES=(
   rustup
   spring-boot
   task
-  yazi-bin
 )
 
 # Additional native Arch/AUR applications (including JetBrains IntelliJ Ultimate)
