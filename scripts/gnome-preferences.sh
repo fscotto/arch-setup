@@ -111,14 +111,14 @@ gsettings set org.gtk.Settings.FileChooser sort-directories-first true
 
 info "Setting background image..."
 mkdir -p "$HOME/.config"
-cp "$SCRIPT_DIR/data/background.jpg" "$HOME/.config/background"
+cp "$SCRIPT_DIR/../data/background.jpg" "$HOME/.config/background"
 gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.config/background"
 gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/.config/background"
 gsettings set org.gnome.desktop.background picture-options 'zoom'
 
 info "Installing file templates..."
 mkdir -p "$HOME/Templates"
-unzip -o "$SCRIPT_DIR/data/templates.zip" -d "$HOME/Templates"
+unzip -o "$SCRIPT_DIR/../data/templates.zip" -d "$HOME/Templates"
 
 info "Setting up Nautilus Python extensions directory..."
 mkdir -p "$HOME/.local/share/nautilus-python/extensions"

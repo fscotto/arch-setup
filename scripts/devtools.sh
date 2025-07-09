@@ -49,6 +49,7 @@ DEV_PACKAGES=(
   python-isort
   python-mypy
   python-pip
+  python-pipx
   python-pylint
   python-pytest
   python-virtualenv

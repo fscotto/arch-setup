@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
 IFS=$'\n\t'
 
@@ -11,13 +12,20 @@ IFS=$'\n\t'
 # -------------------------------------------------------
 
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/logging.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/../lib/functions.sh"
 
 USER_EXT="$HOME/.local/share/gnome-shell/extensions"
 SYSTEM_EXT="/usr/share/glib-2.0/schemas"
 
 info "Installing GNOME Extension CLI tool..."
 pipx install gnome-extensions-cli --system-site-packages
+
+# Add $HOME/.local/bin to PATH if not already present
+if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+  export PATH="$HOME/.local/bin:$PATH"
+  info "Added $HOME/.local/bin to PATH"
+else
+  info "$HOME/.local/bin already in PATH"
+fi
 
 info "Installing GNOME Extensions..."
 extensions=(
