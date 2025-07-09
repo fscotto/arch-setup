@@ -34,16 +34,16 @@ fi
 
 # List of scripts to run in order
 SCRIPTS=(
-  "$SCRIPT_DIR/scripts/app-system.sh"
-  "$SCRIPT_DIR/scripts/app-multimedia.sh"
+  "$SCRIPT_DIR/scripts/system.sh"
+  "$SCRIPT_DIR/scripts/multimedia.sh"
   "$SCRIPT_DIR/scripts/devtools.sh"
-  "$SCRIPT_DIR/scripts/app-docker.sh"
+  "$SCRIPT_DIR/scripts/docker.sh"
   "$SCRIPT_DIR/scripts/dotfiles.sh"
-  "$SCRIPT_DIR/scripts/set-gnome-extensions.sh"
-  "$SCRIPT_DIR/scripts/set-gnome-hotkeys.sh"
-  "$SCRIPT_DIR/scripts/set-gnome-preferences.sh"
-  "$SCRIPT_DIR/scripts/set-openssl-legacy.sh"
-  "$SCRIPT_DIR/scripts/tpm2.sh"
+  "$SCRIPT_DIR/scripts/gnome-extensions.sh"
+  "$SCRIPT_DIR/scripts/gnome-hotkeys.sh"
+  "$SCRIPT_DIR/scripts/gnome-preferences.sh"
+  "$SCRIPT_DIR/scripts/openssl-legacy.sh"
+  "$SCRIPT_DIR/scripts/setup-tpm2.sh"
   "$SCRIPT_DIR/scripts/setup-plymouth.sh"
   "$SCRIPT_DIR/scripts/setup-secureboot.sh"
 )

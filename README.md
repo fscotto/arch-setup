@@ -47,10 +47,10 @@ This repository contains a collection of Bash scripts to automate the installati
    You can also run any script individually, for example:
 
    ```bash
-   ./scripts/install-dev-tools.sh
+   ./scripts/devtools.sh
    ./scripts/dotfiles.sh
-   ./scripts/set-openssl-legacy.sh
-   ./scripts/tpm2.sh
+   ./scripts/openssl-legacy.sh
+   ./scripts/setup-tpm2.sh
    ./scripts/setup-plymouth.sh
    ```
 
