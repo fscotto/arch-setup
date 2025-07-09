@@ -44,7 +44,17 @@ choose_luks_device() {
 }
 
 tpm_device_exists() {
-  [[ -d /sys/class/tpm ]] || [[ -c /dev/tpm0 ]]
+  # Check if /sys/class/tpm exists and is non-empty directory
+  if [[ -d /sys/class/tpm ]] && compgen -G "/sys/class/tpm/*" >/dev/null; then
+    return 0
+  fi
+
+  # Or check if /dev/tpm0 exists and is a char device
+  if [[ -c /dev/tpm0 ]]; then
+    return 0
+  fi
+
+  return 1
 }
 
 configure_mkinitcpio() {
@@ -66,19 +76,18 @@ configure_mkinitcpio() {
 
 configure_dracut() {
   info "Detected dracut system (EndeavourOS)"
-  local dracut_conf="/etc/dracut.conf"
+  local dracut_conf_snippet="/etc/dracut.conf.d/tpm2.conf"
   local dracut_modules="/usr/lib/dracut/modules.d"
 
-  # Add tpm2 module to dracut config (if not already present)
-  if ! grep -q "tpm2" "$dracut_conf" 2>/dev/null; then
-    info "Adding 'tpm2' to dracut modules in $dracut_conf"
-    echo 'add_dracutmodules+=" tpm2 "' >>"$dracut_conf"
+  # Create dracut snippet config file for TPM2 if not already present
+  if [[ ! -f "$dracut_conf_snippet" ]]; then
+    info "Creating $dracut_conf_snippet to enable 'tpm2' module"
+    echo 'add_dracutmodules+=" tpm2 "' >"$dracut_conf_snippet"
   else
-    warn "'tpm2' module already enabled in dracut config"
+    warn "'$dracut_conf_snippet' already exists"
   fi
 
   info "Regenerating initramfs with dracut"
-  # Regenerate all kernels' initramfs images
   dracut --force --kver "$(uname -r)" >>"$LOG_FILE" 2>&1 || warn "dracut command failed"
   success "Updated initramfs with 'tpm2' module"
 }
@@ -140,5 +149,5 @@ if tpm_device_exists; then
     esac
   done
 else
-  error "TPM device not found on this system"
+  warn "TPM device not found on this system"
 fi
